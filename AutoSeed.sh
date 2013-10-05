@@ -31,7 +31,20 @@ for((;;)); do           #循环
 		done
 
 		#################在这里加发布程序
-		curl -F type=$type -F source_sel=$type -F "file=@"$torrent";type=application/octet-stream" -F name="${title}" -F small_descr="${subtitle}" -F "url=""" -F "dburl=""" -F "color=0" -F "font=0" -F "size=0" -F descr="${des}" -b ghptcookie http://$serverurl/takeupload.php
+		curl \
+			-F type=$type \
+			-F source_sel=$type \
+			-F "file=@"$torrent";type=application/octet-stream" \
+			-F name="${title}" \
+			-F small_descr="${subtitle}" \
+			-F "url=""" \
+			-F "dburl=""" \
+			-F "color=0" \
+			-F "font=0" \
+			-F "size=0" \
+			-F descr="${des}" \
+			-b ghptcookie \
+			http://$serverurl/takeupload.php
 
 		#################发布程序完
 		rm "$torrent"                 #处理完成，删除种子
