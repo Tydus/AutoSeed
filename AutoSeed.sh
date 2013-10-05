@@ -12,39 +12,36 @@ for((;;)); do           #循环
 
 	for torrent in *.torrent; do    #查找目录下所有的torrent
 		
-		if [ "$torrent" == "*.torrent" ]
-			then 
-				break  #当目录中不存在任何匹配内容时，i会被赋值为*.torrent，此时应跳出循环
-			else 
-				let "tnum += 1"       #种子计数  
-				echo "Found a torrent $torrent,count $tnum"
-				#txt="${torrent%.torrent}".txt         #查找匹配的TXT文件，‘%’为去掉结尾，‘#’为去掉开头
-				#替换还可以用sed实现,如下 
-				txt=`echo $torrent | sed 's@.torrent@.txt@'`  #看不懂
-				if [ ! -e "$txt" ]
-					then
-						echo "$txt file not found"
-						#break  #查找对应的TXT，如果没有则跳出循环
-					else
-						sed -i 's/\r//' $txt  #转换WINDOWS格式与UNIX格式的回车
-						title=`cat $txt | grep "^title=" | sed s/title=//`    #提取标题，下同
-						#echo "$title"
-						subtitle=`cat $txt | grep "^subtitle=" | sed s/subtitle=//`
-						#if [ "$subtitle" != "" ]; then echo "$subtitle"; fi
-						type=`cat $txt | grep "^type=" | sed s/type=//`
-						subtype=`cat $txt | grep "^subtype=" | sed s/subtype=//`
-						des="`cat $txt | grep "^des=" | sed s/des=//`"
-						des="${des}"$'\n'`cat $txt | grep -v "="`
-						echo "$des"
-
-						#################在这里加发布程序
-						curl -F type=$type -F source_sel=$type -F "file=@"$torrent";type=application/octet-stream" -F name="${title}" -F small_descr="${subtitle}" -F "url=""" -F "dburl=""" -F "color=0" -F "font=0" -F "size=0" -F descr="${des}" -b ghptcookie http://$serverurl/takeupload.php
-
-						#################发布程序完
-						rm "$torrent"                 #处理完成，删除种子
-						rm "$txt"
-				fi
+		if [ "$torrent" == "*.torrent" ]; then break; fi #当目录中不存在任何匹配内容时，i会被赋值为*.torrent，此时应跳出循环
+		
+		let "tnum += 1"       #种子计数  
+		echo "Found a torrent $torrent,count $tnum"
+		
+		#txt="${torrent%.torrent}".txt         #查找匹配的TXT文件，‘%’为去掉结尾，‘#’为去掉开头
+		#替换还可以用sed实现,如下 
+		txt=`echo $torrent | sed 's@.torrent@.txt@'`  #看不懂
+		if [ ! -e "$txt" ]; then
+			echo "$txt file not found"
+			break  #查找对应的TXT，如果没有则跳出循环
 		fi
+		
+		sed -i 's/\r//' $txt  #转换WINDOWS格式与UNIX格式的回车
+		title=`cat $txt | grep "^title=" | sed s/title=//`    #提取标题，下同
+		#echo "$title"
+		subtitle=`cat $txt | grep "^subtitle=" | sed s/subtitle=//`
+		#if [ "$subtitle" != "" ]; then echo "$subtitle"; fi
+		type=`cat $txt | grep "^type=" | sed s/type=//`
+		subtype=`cat $txt | grep "^subtype=" | sed s/subtype=//`
+		des="`cat $txt | grep "^des=" | sed s/des=//`"
+		des="${des}"$'\n'`cat $txt | grep -v "="`
+		echo "$des"
+
+		#################在这里加发布程序
+		curl -F type=$type -F source_sel=$type -F "file=@"$torrent";type=application/octet-stream" -F name="${title}" -F small_descr="${subtitle}" -F "url=""" -F "dburl=""" -F "color=0" -F "font=0" -F "size=0" -F descr="${des}" -b ghptcookie http://$serverurl/takeupload.php
+
+		#################发布程序完
+		rm "$torrent"                 #处理完成，删除种子
+		rm "$txt"
 	done
 	let "num += 1"
 	echo "$num loop count"
