@@ -25,16 +25,10 @@ for((;;)); do           #循环
 			break  #查找对应的TXT，如果没有则跳出循环
 		fi
 		
-		sed -i 's/\r//' $txt  #转换WINDOWS格式与UNIX格式的回车
-		title=`cat $txt | grep "^title=" | sed s/title=//`    #提取标题，下同
-		#echo "$title"
-		subtitle=`cat $txt | grep "^subtitle=" | sed s/subtitle=//`
-		#if [ "$subtitle" != "" ]; then echo "$subtitle"; fi
-		type=`cat $txt | grep "^type=" | sed s/type=//`
-		subtype=`cat $txt | grep "^subtype=" | sed s/subtype=//`
-		des="`cat $txt | grep "^des=" | sed s/des=//`"
-		des="${des}"$'\n'`cat $txt | grep -v "="`
-		echo "$des"
+
+		for j in title subtitle type subtype des; do
+			let "$j=`awk -F= 'flag{print $1}/=/{flag=0}/^$j=/{print $2;flag=1}' $txt`"
+		done
 
 		#################在这里加发布程序
 		curl -F type=$type -F source_sel=$type -F "file=@"$torrent";type=application/octet-stream" -F name="${title}" -F small_descr="${subtitle}" -F "url=""" -F "dburl=""" -F "color=0" -F "font=0" -F "size=0" -F descr="${des}" -b ghptcookie http://$serverurl/takeupload.php
