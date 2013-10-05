@@ -7,6 +7,9 @@ serverurl=192.168.1.102
 tnum=0
 num=0
 for((;;)); do           #循环
+	if [ -e ghptcookie ]; then rm ghptcookie;fi                 #曲奇AFK
+	curl -d username=$username -d password=$password -c ghptcookie http://$serverurl/takelogin.php;      #曲奇来了！
+
 	for torrent in *.torrent; do    #查找目录下所有的torrent
 		
 		if [ "$torrent" == "*.torrent" ]
@@ -33,8 +36,6 @@ for((;;)); do           #循环
 						echo "$des"
 
 						#################在这里加发布程序
-						if [ -e ghptcookie ]; then rm ghptcookie;fi
-						curl -d username=$username -d password=$password -c ghptcookie http://$serverurl/takelogin.php;
 						curl -F type=401 -F source_sel=6 -F "file=@"$torrent";type=application/octet-stream" -F name="${title}" -F small_descr="${subtitle}" -F "url=""" -F "dburl=""" -F "color=0" -F "font=0" -F "size=0" -F descr="${des}" -b ghptcookie http://$serverurl/takeupload.php
 
 						#################发布程序完
